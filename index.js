@@ -18,7 +18,7 @@ const cadastrarMeta = async () => {
     metas.push(
         {value: meta, checked: false}
     )
-}
+};
 
 const listarMetas = async () => {
     const respostas = await checkbox({
@@ -35,7 +35,7 @@ const listarMetas = async () => {
         console.log("Nenhuma meta selecionada!")
         return
     }
-    
+
     respostas.forEach((resposta) => {
         const meta = metas.find((qualquerMeta) => {
             return qualquerMeta.value == resposta
@@ -46,7 +46,7 @@ const listarMetas = async () => {
     }) 
 
     console.log("Meta(s) concluída(s) com sucesso.")
-}
+};
 
 const metasRealizadas = async () => {
     const realizadas = metas.filter((meta) => {
@@ -54,15 +54,31 @@ const metasRealizadas = async () => {
     })
 
     if(realizadas.length == 0) {
-        console.log("Não exite metas finalizadas =(")
+        console.log("Não exite metas finalizadas =( " )
         return
     }
 
-    await selectU({
-        message: "Metas Realizadas:",
+    await select({
+        message: "Metas Realizadas: " + realizadas.length ,
         choices: [...realizadas]
     })
-}
+};
+
+const metasAbertas = async () => {
+    const abertas = metas.filter((meta) => {
+        return meta.checked != true 
+    })
+
+    if(abertas.length == 0) {
+        console.log("Não exite metas em aberto =) ")
+        return
+    }
+
+    await select({
+        message: "Metas Abertas: " + abertas.length,
+        choices: [...abertas]
+    })
+};
 
 const start = async () => {
     while (true) {
@@ -80,6 +96,10 @@ const start = async () => {
                 {
                     name: "Metas realizadas",
                     value: "realizadas"
+                },   
+                {
+                    name: "Metas abertas",
+                    value: "abertas"
                 },   
                 {
                     name: "Sair",
@@ -100,6 +120,10 @@ const start = async () => {
 
             case "realizadas":
                 await metasRealizadas()
+                break
+
+            case "abertas":
+                await metasAbertas()
                 break
 
             case "sair":
