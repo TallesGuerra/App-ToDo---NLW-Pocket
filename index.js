@@ -5,24 +5,24 @@ let meta = {
     checked: false,
 }
 
-let metas = [ meta ]
+let metas = [meta]
 
 const cadastrarMeta = async () => {
-    const meta = await input({  message: "Digite a meta:" })
+    const meta = await input({ message: "Digite a meta:" })
 
-    if(meta.length == 0) {
+    if (meta.length == 0) {
         console.log("A meta não pode ser vazia.")
         return
     }
 
     metas.push(
-        {value: meta, checked: false}
+        { value: meta, checked: false }
     )
 };
 
 const listarMetas = async () => {
     const respostas = await checkbox({
-        message:"Use as SETAS para mudar de meta, o ESPAÇO para marcar/desmarcar e o ENTER para finalizar a etapa",
+        message: "Use as SETAS para mudar de meta, o ESPAÇO para marcar/desmarcar e o ENTER para finalizar a etapa",
         choices: [...metas],
         instructions: false,
     })
@@ -31,7 +31,7 @@ const listarMetas = async () => {
         qualquerMeta.checked = false
     })
 
-    if(respostas.length == 0){
+    if (respostas.length == 0) {
         console.log("Nenhuma meta selecionada!")
         return
     }
@@ -43,7 +43,7 @@ const listarMetas = async () => {
         })
 
         meta.checked = true
-    }) 
+    })
 
     console.log("Meta(s) concluída(s) com sucesso.")
 };
@@ -53,23 +53,23 @@ const metasRealizadas = async () => {
         return meta.checked
     })
 
-    if(realizadas.length == 0) {
-        console.log("Não exite metas finalizadas =( " )
+    if (realizadas.length == 0) {
+        console.log("Não exite metas finalizadas =( ")
         return
     }
 
     await select({
-        message: "Metas Realizadas: " + realizadas.length ,
+        message: "Metas Realizadas: " + realizadas.length,
         choices: [...realizadas]
     })
 };
 
 const metasAbertas = async () => {
     const abertas = metas.filter((meta) => {
-        return meta.checked != true 
+        return meta.checked != true
     })
 
-    if(abertas.length == 0) {
+    if (abertas.length == 0) {
         console.log("Não exite metas em aberto =) ")
         return
     }
@@ -80,6 +80,36 @@ const metasAbertas = async () => {
     })
 };
 
+const deletarMetas = async () => {
+    if(metas.length == 0) {
+        mensagem = "Não existem metas!"
+        return
+    }
+
+    const metasDesmarcadas = metas.map((meta) => {
+        return { value: meta.value, checked: false }
+    })
+
+    const itemsADeletar = await checkbox({
+        message: "Selecione item para deletar",
+        choices: [...metasDesmarcadas],
+        instructions: false,
+    })
+
+    if (itemsADeletar.length == 0) {
+        mensagem = "Nenhum item para deletar!"
+        return
+    }
+
+    itemsADeletar.forEach((item) => {
+        metas = metas.filter((meta) => {
+            return meta.value != item
+        })
+    })
+
+    mensagem = "Meta(s) deleta(s) com sucesso!"
+}
+
 const start = async () => {
     while (true) {
         const opcao = await select({
@@ -88,19 +118,23 @@ const start = async () => {
                 {
                     name: "Cadastrar meta",
                     value: "cadastrar"
-                },   
+                },
                 {
                     name: "Listar metas",
                     value: "listar"
-                },     
+                },
                 {
                     name: "Metas realizadas",
                     value: "realizadas"
-                },   
+                },
                 {
                     name: "Metas abertas",
                     value: "abertas"
-                },   
+                },
+                {
+                    name: "Deletar metas",
+                    value: "deletar"
+                },
                 {
                     name: "Sair",
                     value: "sair"
@@ -126,7 +160,12 @@ const start = async () => {
                 await metasAbertas()
                 break
 
+            case "deletar":
+                await deletarMetas()
+                break
+
             case "sair":
+                console.log("Até a próxima =D")
                 return
         }
     }
