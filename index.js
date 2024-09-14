@@ -1,24 +1,23 @@
 const { select, input, checkbox } = require('@inquirer/prompts');
-const fs = require("fs").promises
+const fs = require("fs").promises;
 
 let mensagem = "Seja bem vindo ao App de Metas";
 
-let meta = {
-    value: "Beber 3lts de água por dia",
-    checked: false,
-}
+let metas
 
-let metas = [meta]
-
-/* 
 const carregarMetas = async () => {
     try {
         const dados = await fs.readFile("metas.json", "utf-8")
         metas = JSON.parse(dados)
     }
-    catch (erro) { }
+    catch(erro){
+        metas = []
+    }
 }
- */
+
+const salvarMetas = async () => {
+    await fs.writeFile("metas.json", JSON.stringify(metas, null, 2))
+}
 
 const cadastrarMeta = async () => {
     const meta = await input({ message: "Digite a meta:" })
@@ -125,9 +124,22 @@ const deletarMetas = async () => {
     mensagem = "Meta(s) deleta(s) com sucesso!"
 }
 
+const mostrarMensagem = () => {
+    console.clear();
+
+    if (mensagem != "") {
+        console.log(mensagem) //imprime a msg
+        console.log("") // quebra de linha
+        mensagem = "" // volta para mensagem vazia
+    }
+};
+
 const start = async () => {
+    await carregarMetas()
+
     while (true) {
         mostrarMensagem()
+        await salvarMetas()
 
         const opcao = await select({
             message: "Menu >",
@@ -184,16 +196,6 @@ const start = async () => {
                 mensagem = "Até a próxima =D" 
                 return
         }
-    }
-};
-
-const mostrarMensagem = () => {
-    console.clear();
-
-    if (mensagem != "") {
-        console.log(mensagem) //imprime a msg
-        console.log("") // quebra de linha
-        mensagem = "" // volta para mensagem vazia
     }
 };
 
